@@ -1,0 +1,308 @@
+* action=expandtemplates *
+  This module expand all templates in wikitext
+
+This module requires read rights.
+Parameters:
+  title          - Title of page
+                   Default: API
+  text           - Wikitext to convert
+  generatexml    - Generate XML parse tree
+Example:
+  api.php?action=expandtemplates&text={{Project:Sandbox}}
+
+* action=parse *
+  This module parses wikitext and returns parser output
+
+This module requires read rights.
+Parameters:
+  title          - Title of page the text belongs to
+                   Default: API
+  text           - Wikitext to parse
+  page           - Parse the content of this page. Cannot be used together with text and title
+  redirects      - If the page parameter is set to a redirect, resolve it
+  oldid          - Parse the content of this revision. Overrides page
+  prop           - Which pieces of information to get.
+                   NOTE: Section tree is only generated if there are more than 4 sections, or if the __TOC__ keyword is present
+                   Values (separate with '|'): text, langlinks, categories, links, templates, images, externallinks, sections, revid, displaytitle
+                   Default: text|langlinks|categories|links|templates|images|externallinks|sections|revid|displaytitle
+  pst            - Do a pre-save transform on the input before parsing it.
+                   Ignored if page or oldid is used.
+  onlypst        - Do a PST on the input, but don't parse it.
+                   Returns PSTed wikitext. Ignored if page or oldid is used.
+Example:
+  api.php?action=parse&text={{Project:Sandbox}}
+
+* action=feedwatchlist *
+  This module returns a watchlist feed
+
+This module requires read rights.
+Parameters:
+  feedformat     - The format of the feed
+                   One value: rss, atom
+                   Default: rss
+  hours          - List pages modified within this many hours from now
+                   The value must be between 1 and 72
+                   Default: 24
+  allrev         - Include multiple revisions of the same page within given timeframe.
+Example:
+  api.php?action=feedwatchlist
+
+* action=help *
+  Display this help screen.
+
+* action=paraminfo *
+  Obtain information about certain API parameters
+Parameters:
+  modules        - List of module names (value of the action= parameter)
+  querymodules   - List of query module names (value of prop=, meta= or list= parameter)
+  mainmodule     - Get information about the main (top-level) module as well
+  pagesetmodule  - Get information about the pageset module (providing titles= and friends) as well
+Example:
+  api.php?action=paraminfo&modules=parse&querymodules=allpages|siteinfo
+
+* action=purge *
+  Purge the cache for the given titles.
+
+This module requires read rights.
+This module requires write rights.
+Parameters:
+  titles         - A list of titles
+Example:
+  api.php?action=purge&titles=Main_Page|API
+
+* action=rollback *
+  Undo the last edit to the page. If the last user who edited the page made multiple edits in a row,
+  they will all be rolled back.
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  title          - Title of the page you want to rollback.
+  user           - Name of the user whose edits are to be rolled back. If set incorrectly, you'll get a badtoken error.
+  token          - A rollback token previously retrieved through prop=revisions
+  summary        - Custom edit summary. If not set, default summary will be used.
+  markbot        - Mark the reverted edits and the revert as bot edits
+Examples:
+  api.php?action=rollback&title=Main%20Page&user=Catrope&token=123ABC
+  api.php?action=rollback&title=Main%20Page&user=217.121.114.116&token=123ABC&summary=Reverting%20vandalism&markbot=1
+
+* action=delete *
+  Delete a page.
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  title          - Title of the page you want to delete. Cannot be used together with pageid
+  pageid         - Page ID of the page you want to delete. Cannot be used together with title
+  token          - A delete token previously retrieved through prop=info
+  reason         - Reason for the deletion. If not set, an automatically generated reason will be used.
+  watch          - Add the page to your watchlist
+  unwatch        - Remove the page from your watchlist
+  oldimage       - The name of the old image to delete as provided by iiprop=archivename
+Examples:
+  api.php?action=delete&title=Main%20Page&token=123ABC
+  api.php?action=delete&title=Main%20Page&token=123ABC&reason=Preparing%20for%20move
+
+* action=undelete *
+  Restore certain revisions of a deleted page. A list of deleted revisions (including timestamps) can be
+  retrieved through list=deletedrevs
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  title          - Title of the page you want to restore.
+  token          - An undelete token previously retrieved through list=deletedrevs
+  reason         - Reason for restoring (optional)
+                   Default: 
+  timestamps     - Timestamps of the revisions to restore. If not set, all revisions will be restored.
+Examples:
+  api.php?action=undelete&title=Main%20Page&token=123ABC&reason=Restoring%20main%20page
+  api.php?action=undelete&title=Main%20Page&token=123ABC&timestamps=20070703220045|20070702194856
+
+* action=protect *
+  Change the protection level of a page.
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  title          - Title of the page you want to (un)protect.
+  token          - A protect token previously retrieved through prop=info
+  protections    - Pipe-separated list of protection levels, formatted action=group (e.g. edit=sysop)
+  expiry         - Expiry timestamps. If only one timestamp is set, it'll be used for all protections.
+                   Use 'infinite', 'indefinite' or 'never', for a neverexpiring protection.
+                   Default: infinite
+  reason         - Reason for (un)protecting (optional)
+                   Default: 
+  cascade        - Enable cascading protection (i.e. protect pages included in this page)
+                   Ignored if not all protection levels are 'sysop' or 'protect'
+  watch          - If set, add the page being (un)protected to your watchlist
+Examples:
+  api.php?action=protect&title=Main%20Page&token=123ABC&protections=edit=sysop|move=sysop&cascade&expiry=20070901163000|never
+  api.php?action=protect&title=Main%20Page&token=123ABC&protections=edit=all|move=all&reason=Lifting%20restrictions
+
+* action=block *
+  Block a user.
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  user           - Username, IP address or IP range you want to block
+  token          - A block token previously obtained through the gettoken parameter or prop=info
+  gettoken       - If set, a block token will be returned, and no other action will be taken
+  expiry         - Relative expiry time, e.g. '5 months' or '2 weeks'. If set to 'infinite', 'indefinite' or 'never', the block will never expire.
+                   Default: never
+  reason         - Reason for block (optional)
+  anononly       - Block anonymous users only (i.e. disable anonymous edits for this IP)
+  nocreate       - Prevent account creation
+  autoblock      - Automatically block the last used IP address, and any subsequent IP addresses they try to login from
+  noemail        - Prevent user from sending e-mail through the wiki. (Requires the "blockemail" right.)
+  hidename       - Hide the username from the block log. (Requires the "hideuser" right.)
+  allowusertalk  - Allow the user to edit their own talk page (depends on $wgBlockAllowsUTEdit)
+  reblock        - If the user is already blocked, overwrite the existing block
+Examples:
+  api.php?action=block&user=123.5.5.12&expiry=3%20days&reason=First%20strike
+  api.php?action=block&user=Vandal&expiry=never&reason=Vandalism&nocreate&autoblock&noemail
+
+* action=unblock *
+  Unblock a user.
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  id             - ID of the block you want to unblock (obtained through list=blocks). Cannot be used together with user
+  user           - Username, IP address or IP range you want to unblock. Cannot be used together with id
+  token          - An unblock token previously obtained through the gettoken parameter or prop=info
+  gettoken       - If set, an unblock token will be returned, and no other action will be taken
+  reason         - Reason for unblock (optional)
+Examples:
+  api.php?action=unblock&id=105
+  api.php?action=unblock&user=Bob&reason=Sorry%20Bob
+
+* action=move *
+  Move a page.
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  from           - Title of the page you want to move. Cannot be used together with fromid.
+  fromid         - Page ID of the page you want to move. Cannot be used together with from.
+  to             - Title you want to rename the page to.
+  token          - A move token previously retrieved through prop=info
+  reason         - Reason for the move (optional).
+  movetalk       - Move the talk page, if it exists.
+  movesubpages   - Move subpages, if applicable
+  noredirect     - Don't create a redirect
+  watch          - Add the page and the redirect to your watchlist
+  unwatch        - Remove the page and the redirect from your watchlist
+Example:
+  api.php?action=move&from=Exampel&to=Example&token=123ABC&reason=Misspelled%20title&movetalk&noredirect
+
+* action=edit *
+  Create and edit pages.
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  title          - Page title
+  section        - Section number. 0 for the top section, 'new' for a new section
+  text           - Page content
+  token          - Edit token. You can get one of these through prop=info
+  summary        - Edit summary. Also section title when section=new
+  minor          - Minor edit
+  notminor       - Non-minor edit
+  bot            - Mark this edit as bot
+  basetimestamp  - Timestamp of the base revision (gotten through prop=revisions&rvprop=timestamp).
+                   Used to detect edit conflicts; leave unset to ignore conflicts.
+  starttimestamp - Timestamp when you obtained the edit token.
+                   Used to detect edit conflicts; leave unset to ignore conflicts.
+  recreate       - Override any errors about the article having been deleted in the meantime
+  createonly     - Don't edit the page if it exists already
+  nocreate       - Throw an error if the page doesn't exist
+  captchaword    - Answer to the CAPTCHA
+  captchaid      - CAPTCHA ID from previous request
+  watch          - Add the page to your watchlist
+  unwatch        - Remove the page from your watchlist
+  md5            - The MD5 hash of the text parameter, or the prependtext and appendtext parameters concatenated.
+                   If set, the edit won't be done unless the hash is correct
+  prependtext    - Add this text to the beginning of the page. Overrides text.
+                   Don't use together with section: that won't do what you expect.
+  appendtext     - Add this text to the end of the page. Overrides text
+  undo           - Undo this revision. Overrides text, prependtext and appendtext
+  undoafter      - Undo all revisions from undo to this one. If not set, just undo one revision
+Examples:
+  Edit a page (anonymous user):
+      api.php?action=edit&title=Test&summary=test%20summary&text=article%20content&basetimestamp=20070824123454&token=%2B\
+  Prepend __NOTOC__ to a page (anonymous user):
+      api.php?action=edit&title=Test&summary=NOTOC&minor&prependtext=__NOTOC__%0A&basetimestamp=20070824123454&token=%2B\
+  Undo r13579 through r13585 with autosummary(anonymous user):
+      api.php?action=edit&title=Test&undo=13585&undoafter=13579&basetimestamp=20070824123454&token=%2B\
+
+* action=emailuser *
+  Email a user.
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  target         - User to send email to
+  subject        - Subject header
+  text           - Mail body
+  token          - A token previously acquired via prop=info
+  ccme           - Send a copy of this mail to me
+Example:
+  api.php?action=emailuser&target=WikiSysop&text=Content
+
+* action=watch *
+  Add or remove a page from/to the current user's watchlist
+
+This module requires read rights.
+This module requires write rights.
+Parameters:
+  title          - The page to (un)watch
+  unwatch        - If set the page will be unwatched rather than watched
+Examples:
+  api.php?action=watch&title=Main_Page
+  api.php?action=watch&title=Main_Page&unwatch
+
+* action=patrol *
+  Patrol a page or revision. 
+
+This module requires read rights.
+This module requires write rights.
+Parameters:
+  token          - Patrol token obtained from list=recentchanges
+  rcid           - Recentchanges ID to patrol
+Example:
+  api.php?action=patrol&token=123abc&rcid=230672766
+
+* action=import *
+  Import a page from another wiki, or an XML file
+
+This module requires read rights.
+This module requires write rights.
+This module only accepts POST requests.
+Parameters:
+  token          - Import token obtained through prop=info
+  summary        - Import summary
+  xml            - Uploaded XML file
+  interwikisource - For interwiki imports: wiki to import from
+                   One value: 
+  interwikipage  - For interwiki imports: page to import
+  fullhistory    - For interwiki imports: import the full history, not just the current version
+  templates      - For interwiki imports: import all included templates as well
+  namespace      - For interwiki imports: import to this namespace
+                   One value: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+Examples:
+  Import [[meta:Help:Parserfunctions]] to namespace 100 with full history:
+    api.php?action=import&interwikisource=meta&interwikipage=Help:ParserFunctions&namespace=100&fullhistory&token=123ABC
+
+
+

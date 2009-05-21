@@ -1,0 +1,843 @@
+* prop=info (in) *
+  Get basic page information such as namespace, title, last touched date, ...
+
+This module requires read rights.
+Parameters:
+  inprop         - Which additional properties to get:
+                    protection   - List the protection level of each page
+                    talkid       - The page ID of the talk page for each non-talk page
+                    subjectid    - The page ID of the parent page for each talk page
+                   Values (separate with '|'): protection, talkid, subjectid, url, readable
+  intoken        - Request a token to perform a data-modifying action on a page
+                   Values (separate with '|'): edit, delete, protect, move, block, unblock, email, import
+  incontinue     - When more results are available, use this to continue
+Examples:
+  api.php?action=query&prop=info&titles=Main%20Page
+  api.php?action=query&prop=info&inprop=protection&titles=Main%20Page
+
+* prop=revisions (rv) *
+  Get revision information.
+  This module may be used in several ways:
+   1) Get data about a set of pages (last revision), by setting titles or pageids parameter.
+   2) Get revisions for one given page, by using titles/pageids with start/end/limit params.
+   3) Get data about a set of revisions by setting their IDs with revids parameter.
+  All parameters marked as (enum) may only be used with a single page (#2).
+
+This module requires read rights.
+Parameters:
+  rvprop         - Which properties to get for each revision.
+                   Values (separate with '|'): ids, flags, timestamp, user, size, comment, content
+                   Default: ids|timestamp|flags|comment|user
+  rvlimit        - limit how many revisions will be returned (enum)
+                   No more than 500 (5000 for bots) allowed.
+  rvstartid      - from which revision id to start enumeration (enum)
+  rvendid        - stop revision enumeration on this revid (enum)
+  rvstart        - from which revision timestamp to start enumeration (enum)
+  rvend          - enumerate up to this timestamp (enum)
+  rvdir          - direction of enumeration - towards "newer" or "older" revisions (enum)
+                   One value: newer, older
+                   Default: older
+  rvuser         - only include revisions made by user
+  rvexcludeuser  - exclude revisions made by user
+  rvexpandtemplates - expand templates in revision content
+  rvgeneratexml  - generate XML parse tree for revision content
+  rvsection      - only retrieve the content of this section
+  rvtoken        - Which tokens to obtain for each revision
+                   Values (separate with '|'): rollback
+  rvcontinue     - When more results are available, use this to continue
+  rvdiffto       - Revision ID to diff each revision to.
+                   Use "prev", "next" and "cur" for the previous, next and current revision respectively.
+Examples:
+  Get data with content for the last revision of titles "API" and "Main Page":
+    api.php?action=query&prop=revisions&titles=API|Main%20Page&rvprop=timestamp|user|comment|content
+  Get last 5 revisions of the "Main Page":
+    api.php?action=query&prop=revisions&titles=Main%20Page&rvlimit=5&rvprop=timestamp|user|comment
+  Get first 5 revisions of the "Main Page":
+    api.php?action=query&prop=revisions&titles=Main%20Page&rvlimit=5&rvprop=timestamp|user|comment&rvdir=newer
+  Get first 5 revisions of the "Main Page" made after 2006-05-01:
+    api.php?action=query&prop=revisions&titles=Main%20Page&rvlimit=5&rvprop=timestamp|user|comment&rvdir=newer&rvstart=20060501000000
+  Get first 5 revisions of the "Main Page" that were not made made by anonymous user "127.0.0.1"
+    api.php?action=query&prop=revisions&titles=Main%20Page&rvlimit=5&rvprop=timestamp|user|comment&rvexcludeuser=127.0.0.1
+  Get first 5 revisions of the "Main Page" that were made by the user "MediaWiki default"
+    api.php?action=query&prop=revisions&titles=Main%20Page&rvlimit=5&rvprop=timestamp|user|comment&rvuser=MediaWiki%20default
+
+* prop=links (pl) *
+  Returns all links from the given page(s)
+
+This module requires read rights.
+Parameters:
+  plnamespace    - Show links in this namespace(s) only
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  pllimit        - How many links to return
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  plcontinue     - When more results are available, use this to continue
+Examples:
+  Get links from the [[Main Page]]:
+    api.php?action=query&prop=links&titles=Main%20Page
+  Get information about the link pages in the [[Main Page]]:
+    api.php?action=query&generator=links&titles=Main%20Page&prop=info
+  Get links from the Main Page in the User and Template namespaces:
+    api.php?action=query&prop=links&titles=Main%20Page&plnamespace=2|10
+Generator:
+  This module may be used as a generator
+
+* prop=langlinks (ll) *
+  Returns all interlanguage links from the given page(s)
+
+This module requires read rights.
+Parameters:
+  lllimit        - How many langlinks to return
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  llcontinue     - When more results are available, use this to continue
+Examples:
+  Get interlanguage links from the [[Main Page]]:
+    api.php?action=query&prop=langlinks&titles=Main%20Page&redirects
+
+* prop=images (im) *
+  Returns all images contained on the given page(s)
+
+This module requires read rights.
+Parameters:
+  imlimit        - How many images to return
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  imcontinue     - When more results are available, use this to continue
+Examples:
+  Get a list of images used in the [[Main Page]]:
+    api.php?action=query&prop=images&titles=Main%20Page
+  Get information about all images used in the [[Main Page]]:
+    api.php?action=query&generator=images&titles=Main%20Page&prop=info
+Generator:
+  This module may be used as a generator
+
+* prop=imageinfo (ii) *
+  Returns image information and upload history
+
+This module requires read rights.
+Parameters:
+  iiprop         - What image information to get.
+                   Values (separate with '|'): timestamp, user, comment, url, size, sha1, mime, metadata, archivename, bitdepth
+                   Default: timestamp|user
+  iilimit        - How many image revisions to return
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 1
+  iistart        - Timestamp to start listing from
+  iiend          - Timestamp to stop listing at
+  iiurlwidth     - If iiprop=url is set, a URL to an image scaled to this width will be returned.
+                   Only the current version of the image can be scaled.
+                   Default: -1
+  iiurlheight    - Similar to iiurlwidth. Cannot be used without iiurlwidth
+                   Default: -1
+  iicontinue     - When more results are available, use this to continue
+Examples:
+  api.php?action=query&titles=File:Albert%20Einstein%20Head.jpg&prop=imageinfo
+  api.php?action=query&titles=File:Test.jpg&prop=imageinfo&iilimit=50&iiend=20071231235959&iiprop=timestamp|user|url
+
+* prop=templates (tl) *
+  Returns all templates from the given page(s)
+
+This module requires read rights.
+Parameters:
+  tlnamespace    - Show templates in this namespace(s) only
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  tllimit        - How many templates to return
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  tlcontinue     - When more results are available, use this to continue
+Examples:
+  Get templates from the [[Main Page]]:
+    api.php?action=query&prop=templates&titles=Main%20Page
+  Get information about the template pages in the [[Main Page]]:
+    api.php?action=query&generator=templates&titles=Main%20Page&prop=info
+  Get templates from the Main Page in the User and Template namespaces:
+    api.php?action=query&prop=templates&titles=Main%20Page&tlnamespace=2|10
+Generator:
+  This module may be used as a generator
+
+* prop=categories (cl) *
+  List all categories the page(s) belong to
+
+This module requires read rights.
+Parameters:
+  clprop         - Which additional properties to get for each category.
+                   Values (separate with '|'): sortkey, timestamp
+  clshow         - Which kind of categories to show
+                   Values (separate with '|'): hidden, !hidden
+  cllimit        - How many categories to return
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  clcontinue     - When more results are available, use this to continue
+  clcategories   - Only list these categories. Useful for checking whether a certain page is in a certain category
+Examples:
+  Get a list of categories [[Albert Einstein]] belongs to:
+    api.php?action=query&prop=categories&titles=Albert%20Einstein
+  Get information about all categories used in the [[Albert Einstein]]:
+    api.php?action=query&generator=categories&titles=Albert%20Einstein&prop=info
+Generator:
+  This module may be used as a generator
+
+* prop=extlinks (el) *
+  Returns all external urls (not interwikies) from the given page(s)
+
+This module requires read rights.
+Parameters:
+  ellimit        - How many links to return
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  eloffset       - When more results are available, use this to continue
+Examples:
+  Get a list of external links on the [[Main Page]]:
+    api.php?action=query&prop=extlinks&titles=Main%20Page
+
+* prop=categoryinfo (ci) *
+  Returns information about the given categories
+
+This module requires read rights.
+Parameters:
+  cicontinue     - When more results are available, use this to continue
+Example:
+  api.php?action=query&prop=categoryinfo&titles=Category:Foo|Category:Bar
+
+* prop=duplicatefiles (df) *
+  List all files that are duplicates of the given file(s).
+
+This module requires read rights.
+Parameters:
+  dflimit        - How many files to return
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  dfcontinue     - When more results are available, use this to continue
+Examples:
+  api.php?action=query&titles=File:Albert_Einstein_Head.jpg&prop=duplicatefiles
+  api.php?action=query&generator=allimages&prop=duplicatefiles
+Generator:
+  This module may be used as a generator
+
+--- --- --- --- --- --- --- ---  Query: List  --- --- --- --- --- --- --- --- 
+
+* list=allimages (ai) *
+  Enumerate all images sequentially
+
+This module requires read rights.
+Parameters:
+  aifrom         - The image title to start enumerating from.
+  aiprefix       - Search for all image titles that begin with this value.
+  aiminsize      - Limit to images with at least this many bytes
+  aimaxsize      - Limit to images with at most this many bytes
+  ailimit        - How many total images to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  aidir          - The direction in which to list
+                   One value: ascending, descending
+                   Default: ascending
+  aisha1         - SHA1 hash of image
+  aisha1base36   - SHA1 hash of image in base 36 (used in MediaWiki)
+  aiprop         - Which properties to get
+                   Values (separate with '|'): timestamp, user, comment, url, size, dimensions, mime, sha1, metadata, bitdepth
+                   Default: timestamp|url
+Examples:
+  Simple Use
+   Show a list of images starting at the letter "B"
+    api.php?action=query&list=allimages&aifrom=B
+  Using as Generator
+   Show info about 4 images starting at the letter "T"
+    api.php?action=query&generator=allimages&gailimit=4&gaifrom=T&prop=imageinfo
+Generator:
+  This module may be used as a generator
+
+* list=allpages (ap) *
+  Enumerate all pages sequentially in a given namespace
+
+This module requires read rights.
+Parameters:
+  apfrom         - The page title to start enumerating from.
+  apprefix       - Search for all page titles that begin with this value.
+  apnamespace    - The namespace to enumerate.
+                   One value: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+                   Default: 0
+  apfilterredir  - Which pages to list.
+                   One value: all, redirects, nonredirects
+                   Default: all
+  apminsize      - Limit to pages with at least this many bytes
+  apmaxsize      - Limit to pages with at most this many bytes
+  apprtype       - Limit to protected pages only
+                   Values (separate with '|'): edit, move
+  apprlevel      - The protection level (must be used with apprtype= parameter)
+                   Can be empty, or Values (separate with '|'): autoconfirmed, sysop
+  apprfiltercascade - Filter protections based on cascadingness (ignored when apprtype isn't set)
+                   One value: cascading, noncascading, all
+                   Default: all
+  aplimit        - How many total pages to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  apdir          - The direction in which to list
+                   One value: ascending, descending
+                   Default: ascending
+  apfilterlanglinks - Filter based on whether a page has langlinks
+                   One value: withlanglinks, withoutlanglinks, all
+                   Default: all
+Examples:
+  Simple Use
+   Show a list of pages starting at the letter "B"
+    api.php?action=query&list=allpages&apfrom=B
+  Using as Generator
+   Show info about 4 pages starting at the letter "T"
+    api.php?action=query&generator=allpages&gaplimit=4&gapfrom=T&prop=info
+   Show content of first 2 non-redirect pages begining at "Re"
+    api.php?action=query&generator=allpages&gaplimit=2&gapfilterredir=nonredirects&gapfrom=Re&prop=revisions&rvprop=content
+Generator:
+  This module may be used as a generator
+
+* list=alllinks (al) *
+  Enumerate all links that point to a given namespace
+
+This module requires read rights.
+Parameters:
+  alcontinue     - When more results are available, use this to continue.
+  alfrom         - The page title to start enumerating from.
+  alprefix       - Search for all page titles that begin with this value.
+  alunique       - Only show unique links. Cannot be used with generator or prop=ids
+  alprop         - What pieces of information to include
+                   Values (separate with '|'): ids, title
+                   Default: title
+  alnamespace    - The namespace to enumerate.
+                   One value: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+                   Default: 0
+  allimit        - How many total links to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+Example:
+  api.php?action=query&list=alllinks&alunique&alfrom=B
+Generator:
+  This module may be used as a generator
+
+* list=allcategories (ac) *
+  Enumerate all categories
+
+This module requires read rights.
+Parameters:
+  acfrom         - The category to start enumerating from.
+  acprefix       - Search for all category titles that begin with this value.
+  acdir          - Direction to sort in.
+                   One value: ascending, descending
+                   Default: ascending
+  aclimit        - How many categories to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  acprop         - Which properties to get
+                   Values (separate with '|'): size, hidden
+                   Default: 
+Examples:
+  api.php?action=query&list=allcategories&acprop=size
+  api.php?action=query&generator=allcategories&gacprefix=List&prop=info
+Generator:
+  This module may be used as a generator
+
+* list=allusers (au) *
+  Enumerate all registered users
+
+This module requires read rights.
+Parameters:
+  aufrom         - The user name to start enumerating from.
+  auprefix       - Search for all page titles that begin with this value.
+  augroup        - Limit users to a given group name
+                   One value: bot, sysop, bureaucrat, checkuser, steward, import, transwiki, uploader, oversight, founder, rollbacker, ipblock-exempt, accountcreator, abusefilter
+  auprop         - What pieces of information to include.
+                   `groups` property uses more server resources and may return fewer results than the limit.
+                   Values (separate with '|'): blockinfo, groups, editcount, registration
+  aulimit        - How many total user names to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  auwitheditsonly - Only list users who have made edits
+Example:
+  api.php?action=query&list=allusers&aufrom=Y
+
+* list=backlinks (bl) *
+  Find all pages that link to the given page
+
+This module requires read rights.
+Parameters:
+  bltitle        - Title to search. If null, titles= parameter will be used instead, but will be obsolete soon.
+  blcontinue     - When more results are available, use this to continue.
+  blnamespace    - The namespace to enumerate.
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  blfilterredir  - How to filter for redirects
+                   One value: all, redirects, nonredirects
+                   Default: all
+  bllimit        - How many total pages to return. If blredirect is enabled, limit applies to each level separately.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  blredirect     - If linking page is a redirect, find all pages that link to that redirect as well. Maximum limit is halved.
+Examples:
+  api.php?action=query&list=backlinks&bltitle=Main%20Page
+  api.php?action=query&generator=backlinks&gbltitle=Main%20Page&prop=info
+Generator:
+  This module may be used as a generator
+
+* list=blocks (bk) *
+  List all blocked users and IP addresses.
+
+This module requires read rights.
+Parameters:
+  bkstart        - The timestamp to start enumerating from
+  bkend          - The timestamp to stop enumerating at
+  bkdir          - The direction in which to enumerate
+                   One value: newer, older
+                   Default: older
+  bkids          - Pipe-separated list of block IDs to list (optional)
+  bkusers        - Pipe-separated list of users to search for (optional)
+  bkip           - Get all blocks applying to this IP or CIDR range, including range blocks.
+                   Cannot be used together with bkusers. CIDR ranges broader than /16 are not accepted.
+  bklimit        - The maximum amount of blocks to list
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  bkprop         - Which properties to get
+                   Values (separate with '|'): id, user, by, timestamp, expiry, reason, range, flags
+                   Default: id|user|by|timestamp|expiry|reason|flags
+Examples:
+  api.php?action=query&list=blocks
+  api.php?action=query&list=blocks&bkusers=Alice|Bob
+
+* list=categorymembers (cm) *
+  List all pages in a given category
+
+This module requires read rights.
+Parameters:
+  cmtitle        - Which category to enumerate (required). Must include Category: prefix
+  cmprop         - What pieces of information to include
+                   Values (separate with '|'): ids, title, sortkey, timestamp
+                   Default: ids|title
+  cmnamespace    - Only include pages in these namespaces
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  cmcontinue     - For large categories, give the value retured from previous query
+  cmlimit        - The maximum number of pages to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  cmsort         - Property to sort by
+                   One value: sortkey, timestamp
+                   Default: sortkey
+  cmdir          - In which direction to sort
+                   One value: asc, desc
+                   Default: asc
+  cmstart        - Timestamp to start listing from. Can only be used with cmsort=timestamp
+  cmend          - Timestamp to end listing at. Can only be used with cmsort=timestamp
+  cmstartsortkey - Sortkey to start listing from. Can only be used with cmsort=sortkey
+  cmendsortkey   - Sortkey to end listing at. Can only be used with cmsort=sortkey
+Examples:
+  Get first 10 pages in [[Category:Physics]]:
+    api.php?action=query&list=categorymembers&cmtitle=Category:Physics
+  Get page info about first 10 pages in [[Category:Physics]]:
+    api.php?action=query&generator=categorymembers&gcmtitle=Category:Physics&prop=info
+Generator:
+  This module may be used as a generator
+
+* list=deletedrevs (dr) *
+  List deleted revisions.
+  This module operates in three modes:
+  1) List deleted revisions for the given title(s), sorted by timestamp
+  2) List deleted contributions for the given user, sorted by timestamp (no titles specified)
+  3) List all deleted revisions in the given namespace, sorted by title and timestamp (no titles specified, druser not set)
+  Certain parameters only apply to some modes and are ignored in others.
+  For instance, a parameter marked (1) only applies to mode 1 and is ignored in modes 2 and 3.
+
+This module requires read rights.
+Parameters:
+  drstart        - The timestamp to start enumerating from. (1,2)
+  drend          - The timestamp to stop enumerating at. (1,2)
+  drdir          - The direction in which to enumerate. (1,2)
+                   One value: newer, older
+                   Default: older
+  drfrom         - Start listing at this title (3)
+  drcontinue     - When more results are available, use this to continue (3)
+  drunique       - List only one revision for each page (3)
+  druser         - Only list revisions by this user
+  drexcludeuser  - Don't list revisions by this user
+  drnamespace    - Only list pages in this namespace (3)
+                   One value: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+                   Default: 0
+  drlimit        - The maximum amount of revisions to list
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  drprop         - Which properties to get
+                   Values (separate with '|'): revid, user, comment, minor, len, content, token
+                   Default: user|comment
+Examples:
+  List the last deleted revisions of Main Page and Talk:Main Page, with content (mode 1):
+    api.php?action=query&list=deletedrevs&titles=Main%20Page|Talk:Main%20Page&drprop=user|comment|content
+  List the last 50 deleted contributions by Bob (mode 2):
+    api.php?action=query&list=deletedrevs&druser=Bob&drlimit=50
+  List the first 50 deleted revisions in the main namespace (mode 3):
+    api.php?action=query&list=deletedrevs&drdir=newer&drlimit=50
+  List the first 50 deleted pages in the Talk namespace (mode 3):
+    api.php?action=query&list=deletedrevs&drdir=newer&drlimit=50&drnamespace=1&drunique
+
+* list=embeddedin (ei) *
+  Find all pages that embed (transclude) the given title
+
+This module requires read rights.
+Parameters:
+  eititle        - Title to search. If null, titles= parameter will be used instead, but will be obsolete soon.
+  eicontinue     - When more results are available, use this to continue.
+  einamespace    - The namespace to enumerate.
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  eifilterredir  - How to filter for redirects
+                   One value: all, redirects, nonredirects
+                   Default: all
+  eilimit        - How many total pages to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+Examples:
+  api.php?action=query&list=embeddedin&eititle=Template:Stub
+  api.php?action=query&generator=embeddedin&geititle=Template:Stub&prop=info
+Generator:
+  This module may be used as a generator
+
+* list=imageusage (iu) *
+  Find all pages that use the given image title.
+
+This module requires read rights.
+Parameters:
+  iutitle        - Title to search. If null, titles= parameter will be used instead, but will be obsolete soon.
+  iucontinue     - When more results are available, use this to continue.
+  iunamespace    - The namespace to enumerate.
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  iufilterredir  - How to filter for redirects
+                   One value: all, redirects, nonredirects
+                   Default: all
+  iulimit        - How many total pages to return. If iuredirect is enabled, limit applies to each level separately.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  iuredirect     - If linking page is a redirect, find all pages that link to that redirect as well. Maximum limit is halved.
+Examples:
+  api.php?action=query&list=imageusage&iutitle=File:Albert%20Einstein%20Head.jpg
+  api.php?action=query&generator=imageusage&giutitle=File:Albert%20Einstein%20Head.jpg&prop=info
+Generator:
+  This module may be used as a generator
+
+* list=logevents (le) *
+  Get events from logs.
+
+This module requires read rights.
+Parameters:
+  leprop         - Which properties to get
+                   Values (separate with '|'): ids, title, type, user, timestamp, comment, details
+                   Default: ids|title|type|user|timestamp|comment|details
+  letype         - Filter log entries to only this type(s)
+                   Can be empty, or One value: block, protect, rights, delete, upload, move, import, patrol, merge, suppress, makebot, gblblock, renameuser, globalauth, gblrights, abusefilter, newusers
+  lestart        - The timestamp to start enumerating from.
+  leend          - The timestamp to end enumerating.
+  ledir          - In which direction to enumerate.
+                   One value: newer, older
+                   Default: older
+  leuser         - Filter entries to those made by the given user.
+  letitle        - Filter entries to those related to a page.
+  lelimit        - How many total event entries to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+Example:
+  api.php?action=query&list=logevents
+
+* list=recentchanges (rc) *
+  Enumerate recent changes
+
+This module requires read rights.
+Parameters:
+  rcstart        - The timestamp to start enumerating from.
+  rcend          - The timestamp to end enumerating.
+  rcdir          - In which direction to enumerate.
+                   One value: newer, older
+                   Default: older
+  rcnamespace    - Filter log entries to only this namespace(s)
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  rcprop         - Include additional pieces of information
+                   Values (separate with '|'): user, comment, flags, timestamp, title, ids, sizes, redirect, patrolled, loginfo
+                   Default: title|timestamp|ids
+  rctoken        - Which tokens to obtain for each change
+                   Values (separate with '|'): patrol
+  rcshow         - Show only items that meet this criteria.
+                   For example, to see only minor edits done by logged-in users, set show=minor|!anon
+                   Values (separate with '|'): minor, !minor, bot, !bot, anon, !anon, redirect, !redirect, patrolled, !patrolled
+  rclimit        - How many total changes to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  rctype         - Which types of changes to show.
+                   Values (separate with '|'): edit, new, log
+Example:
+  api.php?action=query&list=recentchanges
+
+* list=search (sr) *
+  Perform a full text search
+
+This module requires read rights.
+Parameters:
+  srsearch       - Search for all page titles (or content) that has this value.
+  srnamespace    - The namespace(s) to enumerate.
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+                   Default: 0
+  srwhat         - Search inside the text or titles.
+                   One value: title, text
+  srredirects    - Include redirect pages in the search.
+  sroffset       - Use this value to continue paging (return by query)
+                   Default: 0
+  srlimit        - How many total pages to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+Examples:
+  api.php?action=query&list=search&srsearch=meaning
+  api.php?action=query&list=search&srwhat=text&srsearch=meaning
+  api.php?action=query&generator=search&gsrsearch=meaning&prop=info
+Generator:
+  This module may be used as a generator
+
+* list=usercontribs (uc) *
+  Get all edits by a user
+
+This module requires read rights.
+Parameters:
+  uclimit        - The maximum number of contributions to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  ucstart        - The start timestamp to return from.
+  ucend          - The end timestamp to return to.
+  uccontinue     - When more results are available, use this to continue.
+  ucuser         - The user to retrieve contributions for.
+  ucuserprefix   - Retrieve contibutions for all users whose names begin with this value. Overrides ucuser.
+  ucdir          - The direction to search (older or newer).
+                   One value: newer, older
+                   Default: older
+  ucnamespace    - Only list contributions in these namespaces
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  ucprop         - Include additional pieces of information
+                   Values (separate with '|'): ids, title, timestamp, comment, flags, patrolled
+                   Default: ids|title|timestamp|flags|comment
+  ucshow         - Show only items that meet this criteria, e.g. non minor edits only: show=!minor
+                   NOTE: if show=patrolled or show=!patrolled is set, revisions older than $wgRCMaxAge won't be shown
+                   Values (separate with '|'): minor, !minor, patrolled, !patrolled
+Examples:
+  api.php?action=query&list=usercontribs&ucuser=YurikBot
+  api.php?action=query&list=usercontribs&ucuserprefix=217.121.114.
+
+* list=watchlist (wl) *
+  Get all recent changes to pages in the logged in user's watchlist
+
+This module requires read rights.
+Parameters:
+  wlallrev       - Include multiple revisions of the same page within given timeframe.
+  wlstart        - The timestamp to start enumerating from.
+  wlend          - The timestamp to end enumerating.
+  wlnamespace    - Filter changes to only the given namespace(s).
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  wldir          - In which direction to enumerate pages.
+                   One value: newer, older
+                   Default: older
+  wllimit        - How many total results to return per request.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  wlprop         - Which additional items to get (non-generator mode only).
+                   Values (separate with '|'): ids, title, flags, user, comment, timestamp, patrol, sizes
+                   Default: ids|title|flags
+  wlshow         - Show only items that meet this criteria.
+                   For example, to see only minor edits done by logged-in users, set show=minor|!anon
+                   Values (separate with '|'): minor, !minor, bot, !bot, anon, !anon, patrolled, !patrolled
+Examples:
+  api.php?action=query&list=watchlist
+  api.php?action=query&list=watchlist&wlprop=ids|title|timestamp|user|comment
+  api.php?action=query&list=watchlist&wlallrev&wlprop=ids|title|timestamp|user|comment
+  api.php?action=query&generator=watchlist&prop=info
+  api.php?action=query&generator=watchlist&gwlallrev&prop=revisions&rvprop=timestamp|user
+Generator:
+  This module may be used as a generator
+
+* list=watchlistraw (wr) *
+  Get all pages on the logged in user's watchlist
+
+This module requires read rights.
+Parameters:
+  wrcontinue     - When more results are available, use this to continue
+  wrnamespace    - Only list pages in the given namespace(s).
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  wrlimit        - How many total results to return per request.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  wrprop         - Which additional properties to get (non-generator mode only).
+                   Values (separate with '|'): changed
+  wrshow         - Only list items that meet these criteria.
+                   Values (separate with '|'): changed, !changed
+Examples:
+  api.php?action=query&list=watchlistraw
+  api.php?action=query&generator=watchlistraw&gwrshow=changed&prop=revisions
+Generator:
+  This module may be used as a generator
+
+* list=exturlusage (eu) *
+  Enumerate pages that contain a given URL
+
+This module requires read rights.
+Parameters:
+  euprop         - What pieces of information to include
+                   Values (separate with '|'): ids, title, url
+                   Default: ids|title|url
+  euoffset       - Used for paging. Use the value returned for "continue"
+  euprotocol     - Protocol of the url. If empty and euquery set, the protocol is http.
+                   Leave both this and euquery empty to list all external links
+                   Can be empty, or One value: http, https, ftp, irc, gopher, telnet, nntp, worldwind, mailto, news, svn
+                   Default: 
+  euquery        - Search string without protocol. See [[Special:LinkSearch]]. Leave empty to list all external links
+  eunamespace    - The page namespace(s) to enumerate.
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  eulimit        - How many pages to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+Example:
+  api.php?action=query&list=exturlusage&euquery=www.mediawiki.org
+Generator:
+  This module may be used as a generator
+
+* list=users (us) *
+  Get information about a list of users
+
+This module requires read rights.
+Parameters:
+  usprop         - What pieces of information to include
+                     blockinfo    - tags if the user is blocked, by whom, and for what reason
+                     groups       - lists all the groups the user belongs to
+                     editcount    - adds the user's edit count
+                     registration - adds the user's registration timestamp
+                     emailable    - tags if the user can and wants to receive e-mail through [[Special:Emailuser]]
+                   Values (separate with '|'): blockinfo, groups, editcount, registration, emailable
+  ususers        - A list of users to obtain the same information for
+Example:
+  api.php?action=query&list=users&ususers=brion|TimStarling&usprop=groups|editcount
+
+* list=random (rn) *
+  Get a set of random pages
+  NOTE: Pages are listed in a fixed sequence, only the starting point is random. This means that if, for example, "Main Page" is the first 
+        random page on your list, "List of fictional monkeys" will *always* be second, "List of people on stamps of Vanuatu" third, etc.
+  NOTE: If the number of pages in the namespace is lower than rnlimit, you will get fewer pages. You will not get the same page twice.
+
+This module requires read rights.
+Parameters:
+  rnnamespace    - Return pages in these namespaces only
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  rnlimit        - Limit how many random pages will be returned
+                   No more than 10 (20 for bots) allowed.
+                   Default: 1
+  rnredirect     - Load a random redirect instead of a random page
+Example:
+  api.php?action=query&list=random&rnnamespace=0&rnlimit=2
+Generator:
+  This module may be used as a generator
+
+* list=protectedtitles (pt) *
+  List all titles protected from creation
+
+This module requires read rights.
+Parameters:
+  ptnamespace    - Only list titles in these namespaces
+                   Values (separate with '|'): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101
+  ptlevel        - Only list titles with these protection levels
+                   Values (separate with '|'): autoconfirmed, sysop
+  ptlimit        - How many total pages to return.
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  ptdir          - The direction in which to list
+                   One value: older, newer
+                   Default: older
+  ptstart        - Start listing at this protection timestamp
+  ptend          - Stop listing at this protection timestamp
+  ptprop         - Which properties to get
+                   Values (separate with '|'): timestamp, user, comment, expiry, level
+                   Default: timestamp|level
+Example:
+  api.php?action=query&list=protectedtitles
+Generator:
+  This module may be used as a generator
+
+* list=globalblocks (bg) *
+  List all globally blocked IP addresses.
+
+This module requires read rights.
+Parameters:
+  bgstart        - The timestamp to start enumerating from
+  bgend          - The timestamp to stop enumerating at
+  bgdir          - The direction in which to enumerate
+                   One value: newer, older
+                   Default: older
+  bgids          - Pipe-separated list of block IDs to list (optional)
+  bgaddresses    - Pipe-separated list of addresses to search for (optional)
+  bgip           - Get all blocks applying to this IP or CIDR range, including range blocks.
+                   Cannot be used together with bkusers. CIDR ranges broader than /16 are not accepted.
+  bglimit        - The maximum amount of blocks to list
+                   No more than 500 (5000 for bots) allowed.
+                   Default: 10
+  bgprop         - Which properties to get
+                   Values (separate with '|'): id, address, by, timestamp, expiry, reason, range
+                   Default: id|address|by|timestamp|expiry|reason
+Examples:
+  api.php?action=query&list=globalblocks
+  api.php?action=query&list=globalblocks&bgip=217.121.114.116
+
+--- --- --- --- --- --- --- ---  Query: Meta  --- --- --- --- --- --- --- --- 
+
+* meta=siteinfo (si) *
+  Return general information about the site.
+
+This module requires read rights.
+Parameters:
+  siprop         - Which sysinfo properties to get:
+                    general      - Overall system information
+                    namespaces   - List of registered namespaces and their canonical names
+                    namespacealiases - List of registered namespace aliases
+                    specialpagealiases - List of special page aliases
+                    magicwords   - List of magic words and their aliases
+                    statistics   - Returns site statistics
+                    interwikimap - Returns interwiki map (optionally filtered)
+                    dbrepllag    - Returns database server with the highest replication lag
+                    usergroups   - Returns user groups and the associated permissions
+                    extensions   - Returns extensions installed on the wiki
+                    fileextensions - Returns list of file extensions allowed to be uploaded
+                    rightsinfo   - Returns wiki rights (license) information if available
+                   Values (separate with '|'): general, namespaces, namespacealiases, specialpagealiases, magicwords, interwikimap, dbrepllag, statistics, usergroups, extensions, fileextensions, rightsinfo
+                   Default: general
+  sifilteriw     - Return only local or only nonlocal entries of the interwiki map
+                   One value: local, !local
+  sishowalldb    - List all database servers, not just the one lagging the most
+Examples:
+  api.php?action=query&meta=siteinfo&siprop=general|namespaces|namespacealiases|statistics
+  api.php?action=query&meta=siteinfo&siprop=interwikimap&sifilteriw=local
+  api.php?action=query&meta=siteinfo&siprop=dbrepllag&sishowalldb
+
+* meta=userinfo (ui) *
+  Get information about the current user
+
+This module requires read rights.
+Parameters:
+  uiprop         - What pieces of information to include
+                     blockinfo  - tags if the current user is blocked, by whom, and for what reason
+                     hasmsg     - adds a tag "message" if the current user has pending messages
+                     groups     - lists all the groups the current user belongs to
+                     rights     - lists of all rights the current user has
+                     options    - lists all preferences the current user has set
+                     editcount  - adds the current user's edit count
+                     ratelimits - lists all rate limits applying to the current user
+                   Values (separate with '|'): blockinfo, hasmsg, groups, rights, options, preferencestoken, editcount, ratelimits, email
+Examples:
+  api.php?action=query&meta=userinfo
+  api.php?action=query&meta=userinfo&uiprop=blockinfo|groups|rights|hasmsg
+
+* meta=allmessages (am) *
+  Return messages from this site.
+
+This module requires read rights.
+Parameters:
+  ammessages     - Which messages to output. "*" means all messages
+                   Default: *
+  amfilter       - Return only messages that contain this string
+  amlang         - Return messages in this language
+  amfrom         - Return messages starting at this message
+Examples:
+  api.php?action=query&meta=allmessages&amfilter=ipb-
+  api.php?action=query&meta=allmessages&ammessages=august|mainpage&amlang=de
+

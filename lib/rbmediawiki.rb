@@ -1,0 +1,6 @@
+require 'api'
+require 'page'
+require 'category'
+require 'user'
+require 'page_generator'
+require 'misc_generator'
