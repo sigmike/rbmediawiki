@@ -1,7 +1,4 @@
-require 'yaml'
-require 'net/http'
-require 'rubygems'
-require 'xmlsimple'
+#coding: utf-8
 
 Ourconfig = YAML::load(File.open(File.dirname(__FILE__)+"/config.yml"))
 
@@ -13,7 +10,6 @@ Ourconfig = YAML::load(File.open(File.dirname(__FILE__)+"/config.yml"))
 # of it
 #
 # Only four methods are special and deserve comments here: #new, #login, #query and #add_post
- 
 class Api
 
 # * lang: language of the wiki at wikimedia.
@@ -891,7 +887,10 @@ class Api
         response = Net::HTTP.new(uri.host, uri.port).start { |http| 
             http.request(request)
         }
-        return_result = XmlSimple.xml_in(response.body, { 'ForceArray' => false })	
+        resputf8 = '<?xml version="1.0" encoding="UTF-8" ?>'+response.body[21..-1]
+
+        return_result = XmlSimple.xml_in(resputf8, { 'ForceArray' => false })	
+        return return_result
     end
 
     def add_post(key, value, post_me = nil)

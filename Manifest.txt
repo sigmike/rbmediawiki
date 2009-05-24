@@ -1,0 +1,13 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+lib/rbmediawiki.rb
+lib/rbmediawiki/api.rb
+lib/rbmediawiki/category.rb
+lib/rbmediawiki/config.yml
+lib/rbmediawiki/misc_generator.rb
+lib/rbmediawiki/page.rb
+lib/rbmediawiki/page_generator.rb
+lib/rbmediawiki/user.rb
+test/test_rbmediawiki.rb

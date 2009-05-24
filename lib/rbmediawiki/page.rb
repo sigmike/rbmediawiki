@@ -1,8 +1,5 @@
 #TODO: rollback
 #TODO: patrol
-require 'deep_merge'
-
-require 'api'
 
 #This class represents a page. It gives methods for dealing with single
 #pages: obtainig the content, putting it, appending content, deleting, etc.
@@ -220,240 +217,243 @@ class Page
     end
 
 
-    #get interwiki links
-    #min is the minimum number of elements to return, lllimit is the number of
-    #elements to request from the API in each iteration. The method will 
-    #request elements until it has at least min elements.
-    #returns false if there aren't any, and raises NoPage if page doesn't exist
-    def get_interwikis(min = nil, lllimit = 500)
-        llcontinue = nil
-        iws = Hash.new
-        count = 0
-        loop {
-            result = @site.query_prop_langlinks(@normtitle, lllimit, llcontinue)
-            iws.deep_merge!(result['query'])
-            if result.key?('query-continue') && min && count < min
-                count += lllimit
-                llcontinue = result['query-continue']['langlinks']['llcontinue']
-            else
-                break
-            end
-        }
-        if iws['pages']['page'].key?('missing')
-            raise NoPage.new(), "Page [[#{title}]] does not exist"
-        elsif iws['pages']['page'].key?('langlinks')
-            return iws['pages']['page']['langlinks']['ll']
-        else return false
-        end
-    end
-    
-    #gets image links of a page
-    #min is the minimum number of elements to return, imlimit is the number of
-    #elements to request from the API in each iteration. The method will 
-    #request elements until it has at least min elements.
-    #returns false if there aren't any, and raises NoPage if page doesn't exist
-    def get_images(min = nil, imlimit = 500)
-        imcontinue = nil
-        ims = Hash.new
-        count = 0
-        loop {
-            result = @site.query_prop_images(@normtitle, imlimit, imcontinue)
-            ims.deep_merge!(result['query'])
-            if result.key?('query-continue') && min && count < min
-                count += lllimit
-                imcontinue = result['query-continue']['images']['imcontinue']
-            else
-                break
-            end
-        }
-        if ims['pages']['page'].key?('missing')
-            raise NoPage.new(), "Page [[#{@title}]] does not exist"
-        elsif ims['pages']['page'].key?('images')
-            return ims['pages']['page']['images']['im']
-        else return false
-        end
-    end
-
-    #gets templates used in a page
-    #min is the minimum number of elements to return, tllimit is the number of
-    #elements to request from the API in each iteration. The method will 
-    #request elements until it has at least min elements.
-    #returns false if there aren't any, and raises NoPage if page doesn't exist
-    def get_templates(min = nil, tllimit = 500)
-        tlcontinue = nil
-        tls = Hash.new
-        count = 0
-        loop {
-            result = @site.query_prop_templates(@normtitle, nil, tllimit, tlcontinue)
-            tls.deep_merge!(result['query'])
-            if result.key?('query-continue')&& min && count < min
-                count += lllimit
-                tlcontinue = result['query-continue']['templates']['tlcontinue']
-            else
-                break
-            end
-        }
-        if tls['pages']['page'].key?('missing')
-            raise NoPage.new(), "Page [[#{@title}]] does not exist"
-        elsif tls['pages']['page'].key?('templates')
-            return tls['pages']['page']['templates']['tl']
-        else return false
-        end
-    end
-    
-    #gets templates used in a page
-    #min is the minimum number of elements to return, cllimit is the number of
-    #elements to request from the API in each iteration. The method will 
-    #request elements until it has at least min elements.
-    #clshow can be "hidden" or "!hidden". Default shows both
-    #if sortkey is true will return the sortkey. Default is true
-    def get_categories(min = nil, cllimit = 500, clshow = nil, sortkey = true)
-        clcontinue = nil
-        cls = Hash.new
-        count = 0
-
-        if sortkey 
-            clprop = "sortkey"
-        end
-
-        loop {
-            result = @site.query_prop_categories(@normtitle, clprop, clshow, cllimit, clcontinue)
-            cls.deep_merge!(result['query'])
-            if result.key?('query-continue')&& min && count < min
-                count += lllimit
-                clcontinue = result['query-continue']['categories']['clcontinue']
-            else
-                break
-            end
-        }
-        if cls['pages']['page'].key?('missing')
-            raise NoPage.new(), "Page [[#{@title}]] does not exist"
-        elsif cls['pages']['page'].key?('categories')
-            return cls['pages']['page']['categories']['cl']
-        else return false
-        end
-    end
-
-    #gets external links used in a page
-    #min is the minimum number of elements to return, ellimit is the number of
-    #elements to request from the API in each iteration. The method will 
-    #request elements until it has at least min elements.
-    #returns false if there aren't any, and raises NoPage if page doesn't exist
-    def get_external_links(min = nil, ellimit = 500)
-        eloffset = nil
-        els = Hash.new
-        count = 0
-        loop {
-            result = @site.query_prop_extlinks(@normtitle, ellimit, eloffset)
-            els.deep_merge!(result['query'])
-            if result.key?('query-continue')&& min && count < min
-                count += lllimit
-                eloffset = result['query-continue']['extlinks']['elcontinue']
-            else
-                break
-            end
-        }
-        if els['pages']['page'].key?('missing')
-            raise NoPage.new(), "Page [[#{@title}]] does not exist"
-        elsif els['pages']['page'].key?('extlinks')
-            return els['pages']['page']['extlinks']['el']
-        else return false
-        end
-    end
-    
+     #not working in r1.9
+#    #get interwiki links
+#    #min is the minimum number of elements to return, lllimit is the number of
+#    #elements to request from the API in each iteration. The method will 
+#    #request elements until it has at least min elements.
+#    #returns false if there aren't any, and raises NoPage if page doesn't exist
+#    def get_interwikis(min = nil, lllimit = 500)
+#        llcontinue = nil
+#        iws = Hash.new
+#        count = 0
+#        loop {
+#            result = @site.query_prop_langlinks(@normtitle, lllimit, llcontinue)
+#            iws.deep_merge!(result['query'])
+#            if result.key?('query-continue') && min && count < min
+#                count += lllimit
+#                llcontinue = result['query-continue']['langlinks']['llcontinue']
+#            else
+#                break
+#            end
+#        }
+#        if iws['pages']['page'].key?('missing')
+#            raise NoPage.new(), "Page [[#{title}]] does not exist"
+#        elsif iws['pages']['page'].key?('langlinks')
+#            return iws['pages']['page']['langlinks']['ll']
+#        else return false
+#        end
+#    end
+#    
+#    #gets image links of a page
+#    #min is the minimum number of elements to return, imlimit is the number of
+#    #elements to request from the API in each iteration. The method will 
+#    #request elements until it has at least min elements.
+#    #returns false if there aren't any, and raises NoPage if page doesn't exist
+#    def get_images(min = nil, imlimit = 500)
+#        imcontinue = nil
+#        ims = Hash.new
+#        count = 0
+#        loop {
+#            result = @site.query_prop_images(@normtitle, imlimit, imcontinue)
+#            ims.deep_merge!(result['query'])
+#            if result.key?('query-continue') && min && count < min
+#                count += lllimit
+#                imcontinue = result['query-continue']['images']['imcontinue']
+#            else
+#                break
+#            end
+#        }
+#        if ims['pages']['page'].key?('missing')
+#            raise NoPage.new(), "Page [[#{@title}]] does not exist"
+#        elsif ims['pages']['page'].key?('images')
+#            return ims['pages']['page']['images']['im']
+#        else return false
+#        end
+#    end
+#
+#    #gets templates used in a page
+#    #min is the minimum number of elements to return, tllimit is the number of
+#    #elements to request from the API in each iteration. The method will 
+#    #request elements until it has at least min elements.
+#    #returns false if there aren't any, and raises NoPage if page doesn't exist
+#    def get_templates(min = nil, tllimit = 500)
+#        tlcontinue = nil
+#        tls = Hash.new
+#        count = 0
+#        loop {
+#            result = @site.query_prop_templates(@normtitle, nil, tllimit, tlcontinue)
+#            tls.deep_merge!(result['query'])
+#            if result.key?('query-continue')&& min && count < min
+#                count += lllimit
+#                tlcontinue = result['query-continue']['templates']['tlcontinue']
+#            else
+#                break
+#            end
+#        }
+#        if tls['pages']['page'].key?('missing')
+#            raise NoPage.new(), "Page [[#{@title}]] does not exist"
+#        elsif tls['pages']['page'].key?('templates')
+#            return tls['pages']['page']['templates']['tl']
+#        else return false
+#        end
+#    end
+#    
+#    #gets templates used in a page
+#    #min is the minimum number of elements to return, cllimit is the number of
+#    #elements to request from the API in each iteration. The method will 
+#    #request elements until it has at least min elements.
+#    #clshow can be "hidden" or "!hidden". Default shows both
+#    #if sortkey is true will return the sortkey. Default is true
+#    def get_categories(min = nil, cllimit = 500, clshow = nil, sortkey = true)
+#        clcontinue = nil
+#        cls = Hash.new
+#        count = 0
+#
+#        if sortkey 
+#            clprop = "sortkey"
+#        end
+#
+#        loop {
+#            result = @site.query_prop_categories(@normtitle, clprop, clshow, cllimit, clcontinue)
+#            cls.deep_merge!(result['query'])
+#            if result.key?('query-continue')&& min && count < min
+#                count += lllimit
+#                clcontinue = result['query-continue']['categories']['clcontinue']
+#            else
+#                break
+#            end
+#        }
+#        if cls['pages']['page'].key?('missing')
+#            raise NoPage.new(), "Page [[#{@title}]] does not exist"
+#        elsif cls['pages']['page'].key?('categories')
+#            return cls['pages']['page']['categories']['cl']
+#        else return false
+#        end
+#    end
+#
+#    #gets external links used in a page
+#    #min is the minimum number of elements to return, ellimit is the number of
+#    #elements to request from the API in each iteration. The method will 
+#    #request elements until it has at least min elements.
+#    #returns false if there aren't any, and raises NoPage if page doesn't exist
+#    def get_external_links(min = nil, ellimit = 500)
+#        eloffset = nil
+#        els = Hash.new
+#        count = 0
+#        loop {
+#            result = @site.query_prop_extlinks(@normtitle, ellimit, eloffset)
+#            els.deep_merge!(result['query'])
+#            if result.key?('query-continue')&& min && count < min
+#                count += lllimit
+#                eloffset = result['query-continue']['extlinks']['elcontinue']
+#            else
+#                break
+#            end
+#        }
+#        if els['pages']['page'].key?('missing')
+#            raise NoPage.new(), "Page [[#{@title}]] does not exist"
+#        elsif els['pages']['page'].key?('extlinks')
+#            return els['pages']['page']['extlinks']['el']
+#        else return false
+#        end
+#    end
+#    
     #gets backlinks (what links here) used in a page
     #min is the minimum number of elements to return, bllimit is the number of
     #elements to request from the API in each iteration. The method will 
     #request elements until it has at least min elements.
     #returns false if there aren't any, and raises NoPage if page doesn't exist
-    def get_backlinks(min = nil, bllimit = 500, blnamespace = nil, blredirect = true)
+
+    def get_backlinks(bllimit = 500, blnamespace = nil, blredirect = true)
         blcontinue = nil
-        bls = Hash.new
-        count = 0
+        bls = Array.new
         loop {
             result = @site.query_list_backlinks(@normtitle, @normtitle, blcontinue, blnamespace, nil, bllimit, blredirect)
-            bls.deep_merge!(result['query'])
-            if result.key?('query-continue')&& min && count < min
-                count += lllimit
+            if result['query']['pages']['page'].key?('missing')
+                raise NoPage.new(), "Page [[#{@title}]] does not exist"
+            end
+            if result['query']['backlinks']['bl'].is_a? Array
+                bls = bls + result['query']['backlinks']['bl']
+            else
+                bls.push(result['query']['backlinks']['bl'])
+            end
+            if result.key?('query-continue')
                 blcontinue = result['query-continue']['backlinks']['blcontinue']
             else
                 break
             end
         }
-        if bls['pages']['page'].key?('missing')
-            raise NoPage.new(), "Page [[#{@title}]] does not exist"
-        elsif bls['backlinks'].key?('bl')
-            return bls['backlinks']['bl']
-        else return false
-        end
+        return bls
     end
 
-    #gets deleted revisions of a page
-    #min is the minimum number of elements to return, drlimit is the number of
-    #elements to request from the API in each iteration. The method will 
-    #request elements until it has at least min elements.
-    #returns false if there aren't any
-    def get_deletedrevs(min = nil, drlimit = 500)
-        @site.login
-        drcontinue = nil
-        drs = Hash.new
-        count = 0
-        loop {
-            result = @site.query_list_deletedrevs(@normtitle, nil, nil, nil, nil, nil, nil, drcontinue, nil, nil, nil, nil, drlimit)
-            drs.deep_merge!(result['query'])
-            if result.key?('query-continue')&& min && count < min
-                count += lllimit
-                drcontinue = result['query-continue']['deletedrevs']['drstart']
-            else
-                break
-            end
-        }
-        if drs['deletedrevs'].key?('page')
-            return drs['deletedrevs']['page']['revisions']['rev']
-        else return false
-        end
-    end
 
-    #gets pages in which this page is embedded (or transcluded). Returns a list
-    #of Page elements
-    #min is the minimum number of elements to return, eilimit is the number of
-    #elements to request from the API in each iteration. The method will 
-    #request elements until it has at least min elements.
-    #returns false if there aren't any, and raises NoPage if page doesn't exist
-    def get_embeddedin(min = nil, eilimit = 500)
-        eicontinue = nil
-        eis = Hash.new
-        count = 0
-        loop {
-            result = @site.query_list_embeddedin(@normtitle, @normtitle, eicontinue, nil, nil, eilimit)
-            eis.deep_merge!(result['query'])
-            if result.key?('query-continue')&& min && count < min
-                count += lllimit
-                eicontinue = result['query-continue']['embeddedin']['eicontinue']
-            else
-                break
-            end
-        }
-        if eis['pages']['page'].key?('missing')
-            raise NoPage.new(), "Page [[#{@title}]] does not exist"
-        elsif eis['embeddedin'].key?('ei')
-            members = Array.new
-            eis['embeddedin']['ei'].each{|el| members.push(Page.new(el['title']))}
-            return members
-        else return false
-        end
-    end
-
-    #returns the size of the page content in bytes
-    #Raises NoPage if the page doesn't exist
-    def get_size
-        result = @site.query_prop_info(@normtitle)
-        if result['query']['pages']['page'].key?('missing')
-            raise NoPage.new(), "Page [[#{@normtitle}]] does not exist"
-        else
-            return result['query']['pages']['page']['length']
-        end
-    end
+#    #gets deleted revisions of a page
+#    #min is the minimum number of elements to return, drlimit is the number of
+#    #elements to request from the API in each iteration. The method will 
+#    #request elements until it has at least min elements.
+#    #returns false if there aren't any
+#    def get_deletedrevs(min = nil, drlimit = 500)
+#        @site.login
+#        drcontinue = nil
+#        drs = Hash.new
+#        count = 0
+#        loop {
+#            result = @site.query_list_deletedrevs(@normtitle, nil, nil, nil, nil, nil, nil, drcontinue, nil, nil, nil, nil, drlimit)
+#            drs.deep_merge!(result['query'])
+#            if result.key?('query-continue')&& min && count < min
+#                count += lllimit
+#                drcontinue = result['query-continue']['deletedrevs']['drstart']
+#            else
+#                break
+#            end
+#        }
+#        if drs['deletedrevs'].key?('page')
+#            return drs['deletedrevs']['page']['revisions']['rev']
+#        else return false
+#        end
+#    end
+#
+#    #gets pages in which this page is embedded (or transcluded). Returns a list
+#    #of Page elements
+#    #min is the minimum number of elements to return, eilimit is the number of
+#    #elements to request from the API in each iteration. The method will 
+#    #request elements until it has at least min elements.
+#    #returns false if there aren't any, and raises NoPage if page doesn't exist
+#    def get_embeddedin(min = nil, eilimit = 500)
+#        eicontinue = nil
+#        eis = Hash.new
+#        count = 0
+#        loop {
+#            result = @site.query_list_embeddedin(@normtitle, @normtitle, eicontinue, nil, nil, eilimit)
+#            eis.deep_merge!(result['query'])
+#            if result.key?('query-continue')&& min && count < min
+#                count += lllimit
+#                eicontinue = result['query-continue']['embeddedin']['eicontinue']
+#            else
+#                break
+#            end
+#        }
+#        if eis['pages']['page'].key?('missing')
+#            raise NoPage.new(), "Page [[#{@title}]] does not exist"
+#        elsif eis['embeddedin'].key?('ei')
+#            members = Array.new
+#            eis['embeddedin']['ei'].each{|el| members.push(Page.new(el['title']))}
+#            return members
+#        else return false
+#        end
+#    end
+#
+#    #returns the size of the page content in bytes
+#    #Raises NoPage if the page doesn't exist
+#    def get_size
+#        result = @site.query_prop_info(@normtitle)
+#        if result['query']['pages']['page'].key?('missing')
+#            raise NoPage.new(), "Page [[#{@normtitle}]] does not exist"
+#        else
+#            return result['query']['pages']['page']['length']
+#        end
+#    end
 
 end
 

@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--
+
+    rbmediawiki-0.2.1 Documentation
+
+  -->
+<head>
+  <title>rbmediawiki</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="main.css" type="text/css" />
+
+</head>
+<body>
+<div id="wrap">
+<div id="header"><h1>rbmediawiki</h1></div>
+<div id="nav">
+<ul>
+<li><a href="http://rubyforge.org/projects/rbmediawiki/">Project's page</a></li>
+<li><a href="/rdoc">rdoc documentation</a></li>
+<li><a href="http://rbmediawiki.rubyforge.org/wiki/wiki.pl">Wiki</a></li>
+</ul>
+</div>
+<div id="main">
+    <h2>Installation</h2>
+<p>The easiest way is to run:</p>
+<pre>sudo gem install rbmediawiki</pre>
+    <h2>Examples</h2>
+    <h3>Retrieve all links pointing to a page</h3>
+
+<pre style='color:#000000;background:#ffffff;'><span style='color:#696969; '>#coding: utf-8</span>
+<span style='color:#400000; '>require</span> <span style='color:#0000e6; '>'rbmediawiki'</span>
+
+mysite <span style='color:#808030; '>=</span> Api<span style='color:#808030; '>.</span><span style='color:#800000; font-weight:bold; '>new</span><span style='color:#808030; '>(</span><span style='color:#800000; font-weight:bold; '>nil</span>, <span style='color:#800000; font-weight:bold; '>nil</span>, <span style='color:#0000e6; '>'chabbot'</span>, <span style='color:#0000e6; '>'http://es.wikipedia.org'</span>, <span style='color:#0000e6; '>'http://es.wikipedia.org/w/api.php'</span><span style='color:#808030; '>)</span>
+
+mygen  <span style='color:#808030; '>=</span> Page_generator<span style='color:#808030; '>.</span><span style='color:#800000; font-weight:bold; '>new</span><span style='color:#808030; '>(</span>mysite<span style='color:#808030; '>)</span>
+
+mygen<span style='color:#808030; '>.</span>alllinks<span style='color:#808030; '>(</span><span style='color:#0000e6; '>"japonés"</span><span style='color:#808030; '>)</span><span style='color:#800080; '>{</span>|rv|
+    <span style='color:#400000; '>puts</span> rv<span style='color:#808030; '>.</span>title
+    <span style='color:#400000; '>puts</span> rv<span style='color:#808030; '>.</span>get
+<span style='color:#800080; '>}</span>
+</pre>
+
+<h3>Changing pages that transclude a template</h3>
+<pre style='color:#000000;background:#ffffff;'>#coding: utf-8
+require <span style='color:#0000e6; '>'rbmediawiki'</span>
+
+mysite <span style='color:#808030; '>=</span> Api.new(nil<span style='color:#808030; '>,</span> nil<span style='color:#808030; '>,</span> <span style='color:#0000e6; '>'chabbot'</span><span style='color:#808030; '>,</span> <span style='color:#0000e6; '>'http://es.wikipedia.org'</span><span style='color:#808030; '>,</span> <span style='color:#0000e6; '>'http://es.wikipedia.org/w/api.php'</span>)
+
+mygen  <span style='color:#808030; '>=</span> Page_generator.new(mysite)
+mygen.templateusage(<span style='color:#0000e6; '>"Plantilla:Ficha de artista musical"</span>)<span style='color:#000000; background:#ffffe8; '>{</span><span style='color:#0f69ff; background:#ffffe8; '>|page|</span><span style='color:#000000; background:#ffffe8; '></span>
+<span style='color:#000000; background:#ffffe8; '>&#xa0;&#xa0;&#xa0;&#xa0;txt </span><span style='color:#808030; background:#ffffe8; '>=</span><span style='color:#000000; background:#ffffe8; '> page.get</span>
+<span style='color:#000000; background:#ffffe8; '></span>
+<span style='color:#000000; background:#ffffe8; '>&#xa0;&#xa0;&#xa0;&#xa0;puts </span><span style='color:#0000e6; background:#ffffe8; '>"Evaluando #{page.title}"</span><span style='color:#000000; background:#ffffe8; '></span>
+<span style='color:#000000; background:#ffffe8; '>&#xa0;&#xa0;&#xa0;&#xa0;</span><span style='color:#800000; background:#ffffe8; font-weight:bold; '>reg</span><span style='color:#000000; background:#ffffe8; '> </span><span style='color:#808030; background:#ffffe8; '>=</span><span style='color:#000000; background:#ffffe8; '> /(\{\{[Ff]icha de artista musical.*[Ii]</span><span style='color:#40015a; background:#ffffe8; '>nstrumento\s</span><span style='color:#000000; background:#ffffe8; '>*=[^\}\|]*)\[\[[vV]oz\]\]/m</span>
+<span style='color:#000000; background:#ffffe8; '>&#xa0;&#xa0;&#xa0;&#xa0;if txt </span><span style='color:#808030; background:#ffffe8; '>=</span><span style='color:#000000; background:#ffffe8; '>~ reg</span>
+<span style='color:#000000; background:#ffffe8; '>&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;txt.</span><span style='color:#800000; background:#ffffe8; font-weight:bold; '>sub</span><span style='color:#000000; background:#ffffe8; '>!(</span><span style='color:#800000; background:#ffffe8; font-weight:bold; '>reg</span><span style='color:#808030; background:#ffffe8; '>,</span><span style='color:#0000e6; background:#ffffe8; '>"</span><span style='color:#0f69ff; background:#ffffe8; '>\\</span><span style='color:#0000e6; background:#ffffe8; '>1[[voz (música)|voz]]"</span><span style='color:#000000; background:#ffffe8; '> )</span>
+<span style='color:#000000; background:#ffffe8; '>&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;puts txt</span>
+<span style='color:#000000; background:#ffffe8; '>&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;page.</span><span style='color:#800000; background:#ffffe8; font-weight:bold; '>put</span><span style='color:#000000; background:#ffffe8; '>(txt</span><span style='color:#808030; background:#ffffe8; '>,</span><span style='color:#000000; background:#ffffe8; '> </span><span style='color:#0000e6; background:#ffffe8; '>"Cambiando [[voz]] por [[voz (música)]] en {{Ficha de artista musical}}"</span><span style='color:#000000; background:#ffffe8; '>)</span>
+<span style='color:#000000; background:#ffffe8; '>&#xa0;&#xa0;&#xa0;&#xa0;</span><span style='color:#800000; background:#ffffe8; font-weight:bold; '>end</span><span style='color:#000000; background:#ffffe8; '></span>
+<span style='color:#000000; background:#ffffe8; '>&#xa0;&#xa0;&#xa0;&#xa0;sleep 1</span>
+<span style='color:#000000; background:#ffffe8; '>}</span>
+</pre>
+
+
+</div>
+<div id="sidebar">
+<p>Author: Chabacano, using pieces of code from Eddie Roger's rwikibot</p>
+<p>License GPLv3
+<ul>
+<li><a href="http://es.wikipedia.org/user:chabacano">Author's page at es.wikipedia</a></li>
+</ul>
+</div>
+<div id="footer">
+<p>More documentation incoming ;)</p>
+</div>
+</div>
+</body>
+
+</html>

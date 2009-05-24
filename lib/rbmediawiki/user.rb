@@ -1,7 +1,4 @@
-require 'deep_merge'
-
-require 'api'
-require 'page'
+#coding: utf-8
 
 class User
     attr_reader :name

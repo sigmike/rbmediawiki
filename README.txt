@@ -1,3 +1,45 @@
+= rubyforge
+
+* http://rbmediawiki.rubyforge.com
+
+== DESCRIPTION:
+
+Framework for developing bots and mediawiki tools in ruby.
+
+== FEATURES/PROBLEMS:
+
+* Acceess to the API
+* Iterators for retrieving lists of elements
+
+== EXAMPLES:
+
+For instance, to retrieve all the pages linking to [[es:japonés]], you can do:
+
+#coding: utf-8
+require 'rbmediawiki'
+
+mysite = Api.new(nil, nil, 'chabbot', 'http://es.wikipedia.org', 'http://es.wikipedia.org/w/api.php')
+
+myuser = User.new("Títere", mysite)
+mypage = Page.new("User talk:Títere", mysite)
+mygen  = Page_generator.new(mysite)
+
+mygen.alllinks("japonés"){|rv|
+    puts rv
+}
+
+== REQUIREMENTS:
+
+* xmlsimple
+
+== INSTALL:
+
+sudo gem install
+
+== LICENSE:
+
+    *
+
 GNU GENERAL PUBLIC LICENSE
 
 Version 3, 29 June 2007
@@ -223,4 +265,3 @@ The hypothetical commands `show w' and `show c' should show the appropriate part
 You should also get your employer (if you work as a programmer) or school, if any, to sign a “copyright disclaimer” for the program, if necessary. For more information on this, and how to apply and follow the GNU GPL, see <http://www.gnu.org/licenses/>.
 
 The GNU General Public License does not permit incorporating your program into proprietary programs. If your program is a subroutine library, you may consider it more useful to permit linking proprietary applications with the library. If this is what you want to do, use the GNU Lesser General Public License instead of this License. But first, please read <http://www.gnu.org/philosophy/why-not-lgpl.html>.
-

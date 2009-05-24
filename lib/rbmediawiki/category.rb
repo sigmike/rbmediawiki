@@ -1,8 +1,3 @@
-require 'deep_merge'
-
-require 'api'
-require 'page'
-
 #This class represents a category and performs actions dealing with categories.
 #
 class Category
