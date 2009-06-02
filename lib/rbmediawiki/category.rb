@@ -13,25 +13,24 @@ class Category
     #returns false if there aren't any, and raises NoPage if page doesn't exist
     def get_members(cmlimit = 500)
         cmcontinue = nil
-        cms = Hash.new
+        cms = Array.new
         loop {
             result = @site.query_list_categorymembers(@title, @title, nil, nil, cmcontinue, cmlimit)
+            if result['query']['pages']['page'].key?('missing')
+                raise NoPage.new(), "Page [[#{@title}]] does not exist"
+            end
+            puts result
+            if result['query']['categorymembers']['cm'].is_a? Array
+                cms = cms + result['query']['categorymembers']['cm']
+            else
+                cms.push(result['query']['categorymembers']['cm'])
+            end
             if result.key?('query-continue')
                 cmcontinue = result['query-continue']['categorymembers']['cmcontinue']
-                cms.deep_merge!(result['query'])
             else
-                cms.deep_merge!(result['query'])
                 break
             end
         }
-        if cms['pages']['page'].key?('missing')
-            raise NoPage.new(), "Page [[#{title}]] does not exist"
-        elsif cms.key?('categorymembers')
-            members = Array.new
-            cms['categorymembers']['cm'].each{|el| members.push(Page.new(el['title']))}
-            return members
-        else return false
-        end
-
+        return cms
     end
 end

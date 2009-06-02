@@ -299,38 +299,42 @@ class Page
 #        end
 #    end
 #    
-#    #gets templates used in a page
-#    #min is the minimum number of elements to return, cllimit is the number of
-#    #elements to request from the API in each iteration. The method will 
-#    #request elements until it has at least min elements.
-#    #clshow can be "hidden" or "!hidden". Default shows both
-#    #if sortkey is true will return the sortkey. Default is true
-#    def get_categories(min = nil, cllimit = 500, clshow = nil, sortkey = true)
-#        clcontinue = nil
-#        cls = Hash.new
-#        count = 0
-#
-#        if sortkey 
-#            clprop = "sortkey"
-#        end
-#
-#        loop {
-#            result = @site.query_prop_categories(@normtitle, clprop, clshow, cllimit, clcontinue)
-#            cls.deep_merge!(result['query'])
-#            if result.key?('query-continue')&& min && count < min
-#                count += lllimit
-#                clcontinue = result['query-continue']['categories']['clcontinue']
-#            else
-#                break
-#            end
-#        }
-#        if cls['pages']['page'].key?('missing')
-#            raise NoPage.new(), "Page [[#{@title}]] does not exist"
-#        elsif cls['pages']['page'].key?('categories')
-#            return cls['pages']['page']['categories']['cl']
-#        else return false
-#        end
-#    end
+    #gets templates used in a page
+    #min is the minimum number of elements to return, cllimit is the number of
+    #elements to request from the API in each iteration. The method will 
+    #request elements until it has at least min elements.
+    #clshow can be "hidden" or "!hidden". Default shows both
+    #if sortkey is true will return the sortkey. Default is true
+    def get_categories(min = nil, cllimit = 500, clshow = nil, sortkey = true)
+        clcontinue = nil
+        cls = Array.new
+        count = 0
+
+        if sortkey 
+            clprop = "sortkey"
+        end
+
+        loop {
+            result = @site.query_prop_categories(@normtitle, clprop, clshow, cllimit, clcontinue)
+            if result['query']['pages']['page'].key?('missing')
+                raise NoPage.new(), "Page [[#{@title}]] does not exist"
+            end
+            page = result['query']['pages']['page']
+            if page['categories']['cl'].is_a? Array
+                cls = cls + page['categories']['cl']
+            else
+                cls.push(page['categories']['cl'])
+            end
+
+            if result.key?('query-continue')&& min && count < min
+                count += lllimit
+                clcontinue = result['query-continue']['categories']['clcontinue']
+            else
+                break
+            end
+        }
+        return cls
+    end
 #
 #    #gets external links used in a page
 #    #min is the minimum number of elements to return, ellimit is the number of
