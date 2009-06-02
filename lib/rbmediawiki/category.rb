@@ -16,7 +16,7 @@ class Category
         cms = Array.new
         loop {
             result = @site.query_list_categorymembers(@title, @title, nil, nil, cmcontinue, cmlimit)
-            if result.key?('error')
+            if result.key?('error') || !result['query']['categorymembers'].has_key?('cm')
                 raise NoPage.new(), "Page [[#{@title}]] does not exist"
             end
             if result['query']['categorymembers']['cm'].is_a? Array
